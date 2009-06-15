@@ -26,9 +26,10 @@ sub new
         if exists $p{no_object_refs};
 
     my $self =
-        bless { index  => undef,
-                frames => [],
-                raw    => [],
+        bless { index            => undef,
+                frames           => [],
+                raw              => [],
+                find_start_frame => sub { 1 },
                 %p,
               }, $class;
 
@@ -118,8 +119,13 @@ sub _make_frames
     push @i_pack_re, qr/^\Q$p\E$/;
 
     my $raw = delete $self->{raw};
+    my $found_start = 0;
+
     for my $r ( @{$raw} )
     {
+        $found_start ||= $self->{find_start_frame}->($r);
+        next unless $found_start;
+
         next if grep { $r->{caller}[0] =~ /$_/ } @i_pack_re;
         next if grep { $r->{caller}[0]->isa($_) } keys %i_class;
 
