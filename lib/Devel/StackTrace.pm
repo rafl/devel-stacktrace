@@ -490,6 +490,17 @@ each subroutine call. Setting this parameter causes it to truncate the
 argument's string representation if it is longer than this number of
 characters.
 
+=item * find_start_frame => \&subroutine
+
+By default, Devel::StackTrace will include all stack frames above the
+call to its constructor. Sometimes, for example when your putting your
+logic to construct stack traces in its own function, you want to skip
+additional frames at the top of the stack. To do that, you can specify
+a code reference for the C<find_start_frame> option. The coderef will
+be called for each raw frame (a hash reference with C<caller> and
+C<args> keys) until it returns a true value. The first frame it
+returns something true for, will be the start of the trace.
+
 =back
 
 =item * $trace->next_frame
